@@ -1,7 +1,7 @@
 # =============================================================================
 # IMPORTS
 # =============================================================================
-import os, sys, json, pytz, time
+import os, pytz, time
 import boto3
 import datetime as dt
 from dotenv import load_dotenv
@@ -40,7 +40,6 @@ class OhlcvPuller:
     # MAIN
     # =============================================================================
     def main(self):
-        print("Check timezone stuff is correct")
         for coin in self.coins:
             df = self.get_ohlcv_for_coins(coin)
             self.save_df_to_s3(coin, df)
@@ -103,13 +102,14 @@ class OhlcvPuller:
     # If no dates are provided use last full day
     # =============================================================================
     def determine_start_time(self, start):
-        if start is not None:
-            pass
         now = dt.datetime.utcnow().replace(tzinfo=pytz.UTC)
         today = now.replace(hour=0, minute=0, second=0, microsecond=0)
-        yesterday = today - dt.timedelta(days=1)
-        self.start_obj = yesterday
-        self.start = int(dt.datetime.timestamp(yesterday)) * 1000
+        if start is None:
+            start = today - dt.timedelta(days=1)
+        else:
+            start = dt.datetime.strptime(start, "%Y-%m-%d").replace(tzinfo=pytz.UTC)
+        self.start_obj = start
+        self.start = int(dt.datetime.timestamp(start)) * 1000
         self.end = int(dt.datetime.timestamp(today)) * 1000
 
     # =============================================================================
@@ -128,5 +128,6 @@ class OhlcvPuller:
 
 
 if __name__ == "__main__":
-    obj = OhlcvPuller(["BTCUSDT"], "1m")
+    coins = ["ETHUSDT"]
+    obj = OhlcvPuller(coins, "1m", start="2022-12-04")
     obj.main()
