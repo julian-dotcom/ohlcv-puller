@@ -1,0 +1,44 @@
+# =============================================================================
+# IMPORTS
+# =============================================================================
+import os
+import boto3
+from dotenv import load_dotenv
+import pandas as pd
+from pprint import pprint
+
+pd.options.plotting.backend = "plotly"
+load_dotenv()
+# =============================================================================
+# CONFIG
+# =============================================================================
+BUCKET_NAME = "binance-ohlcv"
+AWS_ACCESS_KEY = os.getenv("AWS_ACCESS_KEY")
+AWS_SECRET_KEY = os.getenv("AWS_SECRET_KEY")
+S3 = boto3.client(
+    "s3",
+    aws_access_key_id=AWS_ACCESS_KEY,
+    aws_secret_access_key=AWS_SECRET_KEY,
+    region_name="eu-central-1",
+)
+
+res = S3.list_objects_v2(Bucket=BUCKET_NAME)
+files = [r["Key"] for r in res["Contents"] if "ETH" in r["Key"]]
+df = None
+for file in files:
+    print(file)
+    csv = S3.get_object(Bucket=BUCKET_NAME, Key=file)
+    if df is None:
+        df = pd.read_csv(csv["Body"])
+        continue
+    temp = pd.read_csv(csv["Body"])
+    df = pd.concat([df, temp], ignore_index=True)
+
+df = df.set_index("timestamp")
+fig = df["close"].plot(
+    title="Binance OHLCV",
+    template="simple_white",
+    labels=dict(index="date", value="Close"),
+)
+fig.update_yaxes(tickprefix="$")
+fig.show()
