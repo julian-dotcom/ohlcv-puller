@@ -21,9 +21,16 @@ S3 = boto3.client(
     aws_secret_access_key=AWS_SECRET_KEY,
     region_name="eu-central-1",
 )
-
-res = S3.list_objects_v2(Bucket=BUCKET_NAME)
-files = [r["Key"] for r in res["Contents"] if "ETH" in r["Key"]]
+folders = S3.list_objects_v2(Bucket=BUCKET_NAME, Delimiter="/")["CommonPrefixes"]
+folders = [f["Prefix"] for f in folders]
+### ============================================================
+### ENTER TOKEN NAME YOU WANT TO VISUALIZE HERE
+TOKEN = "SOL"
+###
+### ============================================================
+folder = f"{TOKEN}BUSD/"
+files = S3.list_objects_v2(Bucket=BUCKET_NAME, Prefix=folder)
+files = [f["Key"] for f in files["Contents"]]
 df = None
 for file in files:
     print(file)
@@ -36,7 +43,7 @@ for file in files:
 
 df = df.set_index("timestamp")
 fig = df["close"].plot(
-    title="Binance OHLCV",
+    title=f"{TOKEN} OHLCV",
     template="simple_white",
     labels=dict(index="date", value="Close"),
 )

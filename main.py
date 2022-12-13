@@ -50,6 +50,7 @@ class OhlcvPuller:
     # =============================================================================
     def get_ohlcv_for_coin_for_all_dates(self, coin):
         for i in range(len(self.midnights) - 1):
+            print(coin)
             cur_midnight, next_midnight = self.midnights[i], self.midnights[i + 1]
             self.get_ohlcv_for_coin_for_date(cur_midnight, next_midnight, coin)
 
@@ -99,6 +100,9 @@ class OhlcvPuller:
     # Save df to s3
     # =============================================================================
     def save_df_to_s3(self, unix: int, coin: str, df):
+        if len(df.index) == 0:
+            print("Nothing to save...")
+            return
         date = dt.datetime.fromtimestamp(unix / 1000, tz=pytz.UTC).strftime("%Y-%m-%d")
         path = f"{coin}/{coin}_{date}_ohlcv.csv"
         csv_buffer = StringIO()
@@ -135,8 +139,6 @@ class OhlcvPuller:
             midnights.append(cur)
             cur += MS_PER_DAY
         self.midnights = midnights
-        print("Midnights:")
-        pprint(self.midnights)
 
     # =============================================================================
     # Need to use pagination, hence, update since if already iterating
@@ -159,6 +161,33 @@ class OhlcvPuller:
 
 
 if __name__ == "__main__":
-    coins = ["ETHUSDT"]
-    obj = OhlcvPuller(coins, "1m", start_str="2022-01-01")
+    coins = [
+        # "ADABUSD",
+        # "ALGOBUSD",
+        "APEBUSD",
+        "ATOMBUSD",
+        "AVAXBUSD",
+        "BNBBUSD",
+        "BTCBUSD",
+        "DOGEBUSD",
+        "DOTBUSD",
+        "ETCBUSD",
+        "ETHBUSD",
+        "FILBUSD",
+        "LINKBUSD",
+        "LTCBUSD",
+        "MATICBUSD",
+        "NEARBUSD",
+        "QNTBUSD",
+        "SHIBBUSD",
+        "SOLBUSD",
+        "TRXBUSD",
+        "UNIBUSD",
+        "VETBUSD",
+        "XLMBUSD",
+        "XMRBUSD",
+        "XRPBUSD",
+    ]
+
+    obj = OhlcvPuller(coins, "1m", start_str="2021-06-01")
     obj.main()
