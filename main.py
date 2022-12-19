@@ -10,8 +10,6 @@ import ccxt
 from pprint import pprint
 from io import StringIO
 
-quit()
-
 load_dotenv()
 # =============================================================================
 # CONFIG
