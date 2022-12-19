@@ -3,9 +3,10 @@ import datetime as dt
 import os
 import pathlib
 
-path = pathlib.Path().resolve() + "/"
+path = str(pathlib.Path(__file__).parent.resolve()) + "/log.txt"
+print(path)
 now = dt.datetime.utcnow()
 
-f = open(f"{path}log.txt", "w")
+f = open(path, "w")
 f.write(str(now))
 f.close()
