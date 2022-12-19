@@ -1,7 +1,7 @@
 # =============================================================================
 # IMPORTS
 # =============================================================================
-import os, pytz, time, traceback
+import sys, os, pytz, time, traceback
 import boto3
 import datetime as dt
 from dotenv import load_dotenv
@@ -9,6 +9,7 @@ import pandas as pd
 import ccxt
 from pprint import pprint
 from io import StringIO
+
 
 load_dotenv()
 # =============================================================================
@@ -32,7 +33,7 @@ class OhlcvPuller:
     HEADER = ["timestamp", "open", "high", "low", "close", "volume"]
     MINUTES_PER_DAY = 24 * 60
 
-    def __init__(self, coins, timeframe, start_str, end_str=None):
+    def __init__(self, coins, timeframe, start_str=None, end_str=None):
         self.coins = coins
         self.timeframe = timeframe
         self.determine_start_n_end_time(start_str, end_str)
@@ -119,14 +120,28 @@ class OhlcvPuller:
     # =============================================================================
     # If no dates are provided use last full day
     # =============================================================================
-    def determine_start_n_end_time(self, start_str, end_str=None):
+    def determine_start_n_end_time(self, start_str=None, end_str=None):
         now = dt.datetime.utcnow().replace(tzinfo=pytz.UTC)
         today = now.replace(hour=0, minute=0, second=0, microsecond=0)
-        self.start = self.convert_date_str_to_utc_unix(start_str)
+        self.start = self.determine_start_date(today, start_str)
+        self.end = self.determine_end_date(today, end_str)
+
+    # =============================================================================
+    # Determine start, last full day if None provided
+    # =============================================================================
+    def determine_start_date(self, today, start_str=None):
+        if start_str is None:
+            yesterday = today - dt.timedelta(days=1)
+            return int(dt.datetime.timestamp(yesterday)) * 1000
+        return self.convert_date_str_to_utc_unix(start_str)
+
+    # =============================================================================
+    # Determine end, today if None provided
+    # =============================================================================
+    def determine_end_date(self, today, end_str=None):
         if end_str is None:
-            self.end = int(dt.datetime.timestamp(today)) * 1000
-        else:
-            self.end = self.convert_date_str_to_utc_unix(end_str)
+            return int(dt.datetime.timestamp(today)) * 1000
+        return self.convert_date_str_to_utc_unix(end_str)
 
     # =============================================================================
     # Create list of all dates that we fetch for
@@ -162,8 +177,8 @@ class OhlcvPuller:
 
 if __name__ == "__main__":
     coins = [
-        # "ADABUSD",
-        # "ALGOBUSD",
+        "ADABUSD",
+        "ALGOBUSD",
         "APEBUSD",
         "ATOMBUSD",
         "AVAXBUSD",
@@ -187,7 +202,15 @@ if __name__ == "__main__":
         "XLMBUSD",
         "XMRBUSD",
         "XRPBUSD",
+        "AAVEBUSD",
+        "SUSHIBUSD",
+        "COMPBUSD",
+        "1INCHBUSD",
     ]
+    if len(sys.argv) == 1:
+        start_str = None
+    elif len(sys.argv) == 2:
+        start_str = sys.argv[1]
 
-    obj = OhlcvPuller(coins, "1m", start_str="2021-06-01")
+    obj = OhlcvPuller(coins, "1m", start_str=start_str)
     obj.main()
