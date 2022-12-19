@@ -176,6 +176,8 @@ class OhlcvPuller:
 
 if __name__ == "__main__":
     coins = [
+        "1INCHBUSD",
+        "AAVEBUSD",
         "ADABUSD",
         "ALGOBUSD",
         "APEBUSD",
@@ -183,6 +185,7 @@ if __name__ == "__main__":
         "AVAXBUSD",
         "BNBBUSD",
         "BTCBUSD",
+        "COMPBUSD",
         "DOGEBUSD",
         "DOTBUSD",
         "ETCBUSD",
@@ -195,16 +198,13 @@ if __name__ == "__main__":
         "QNTBUSD",
         "SHIBBUSD",
         "SOLBUSD",
+        "SUSHIBUSD",
         "TRXBUSD",
         "UNIBUSD",
         "VETBUSD",
         "XLMBUSD",
         "XMRBUSD",
         "XRPBUSD",
-        "AAVEBUSD",
-        "SUSHIBUSD",
-        "COMPBUSD",
-        "1INCHBUSD",
     ]
     if len(sys.argv) == 1:
         start_str = None
