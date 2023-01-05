@@ -25,10 +25,10 @@ folders = S3.list_objects_v2(Bucket=BUCKET_NAME, Delimiter="/")["CommonPrefixes"
 folders = [f["Prefix"] for f in folders]
 ### ============================================================
 ### ENTER TOKEN NAME YOU WANT TO VISUALIZE HERE
-TOKEN = "BTC"
+TOKEN = "ZEC"
 ###
 ### ============================================================
-folder = f"{TOKEN}BUSD-futures/"
+folder = f"{TOKEN}BUSD/"
 files = S3.list_objects_v2(Bucket=BUCKET_NAME, Prefix=folder)
 files = [f["Key"] for f in files["Contents"]]
 df = None
