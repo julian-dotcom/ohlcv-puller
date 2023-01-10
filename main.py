@@ -113,8 +113,8 @@ class OhlcvPuller:
         df = df.drop_duplicates(subset="timestamp", keep="last")
         df = df[df["timestamp"] < next_midnight]
         df["timestamp"] = pd.to_datetime(df["timestamp"], unit="ms")
+        df["mid"] = df["close"]
         df = df.set_index("timestamp")
-        print(df)
         return df
 
     # =============================================================================
