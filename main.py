@@ -44,6 +44,8 @@ class OhlcvPuller:
     # MAIN
     # =============================================================================
     def main(self):
+        print("Sleeping 10 seconds for crontab...")
+        time.sleep(10)
         for coin in self.coins:
             self.get_ohlcv_for_coin_for_all_dates(coin)
 
