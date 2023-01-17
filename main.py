@@ -78,6 +78,7 @@ class OhlcvPuller:
                 traceback.print_exc()
                 exceptions += 1
                 print(f"Exceptions: {exceptions}")
+                time.sleep(0.2)
             if self.MAX_EXCEPTIONS < exceptions:
                 break
 
@@ -220,6 +221,7 @@ if __name__ == "__main__":
         {"category": "spot", "symbol": "CAKEBUSD"},
         {"category": "spot", "symbol": "CHZBUSD"},
         {"category": "spot", "symbol": "COMPBUSD"},
+        {"category": "spot", "symbol": "CRVBUSD"},
         {"category": "spot", "symbol": "DASHBUSD"},
         {"category": "spot", "symbol": "DOGEBUSD"},
         {"category": "spot", "symbol": "DOTBUSD"},
